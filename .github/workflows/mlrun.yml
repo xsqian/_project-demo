@@ -1,0 +1,28 @@
+name: mlrun-project-workflow
+on: [issue_comment]
+
+jobs:
+  submit-project:
+    if: github.event.issue.pull_request != null && startsWith(github.event.comment.body, '/run')
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.7'
+        architecture: 'x64'
+    
+    - name: Install mlrun
+      run: python -m pip install pip install mlrun
+    - name: Submit project
+      run: python -m mlrun project ./ -w -r main ${CMD:5}
+      env:
+        V3IO_USERNAME: ${{ secrets.V3IO_USERNAME }}
+        V3IO_API: ${{ secrets.V3IO_API }}
+        V3IO_ACCESS_KEY: ${{ secrets.V3IO_ACCESS_KEY }}
+        MLRUN_DBPATH: ${{ secrets.MLRUN_DBPATH }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        CMD: ${{ github.event.comment.body}}
