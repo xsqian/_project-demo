@@ -8,6 +8,11 @@ pipeline {
             environment {
                LOG_LEVEL='INFO'
             }
+            agent {
+                docker {
+                    image 'mlrun/mlrun:1.0.0' 
+                }
+            }
             steps {
                echo "Building release ${RELEASE} with log level ${LOG_LEVEL}..."
                sh 'chmod +x build.sh'
@@ -16,6 +21,8 @@ pipeline {
                      ./build.sh
                   '''
                }
+               sh 'python -m py_compile sources/add2vals.py sources/calc.py' 
+               stash(name: 'compiled-results', includes: 'sources/*.py*') 
             }
         }
         stage('Test') {
