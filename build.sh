@@ -1,5 +1,5 @@
 #!/bin/sh
 python --version
 pip --version
-pip install mlrun==1.0.0
+pip list | grep mlrun
 echo "Using API key: $API_KEY"
