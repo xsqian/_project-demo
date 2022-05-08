@@ -7,6 +7,10 @@ pipeline {
       stage('Build') {
             environment {
                LOG_LEVEL='INFO'
+               MLRUN_DBPATH='https://webapi.default-tenant.app.aaa-spark-fs.iguazio-cd2.com'
+               V3IO_ACCESS_KEY='ec09bfc8-1cb4-466d-9049-852081973ce3'
+               V3IO_USERNAME='xingsheng'
+               V3IO_API="https://default-tenant.app.aaa-spark-fs.iguazio-cd2.com:8443">
             }
             agent {
                 docker {
