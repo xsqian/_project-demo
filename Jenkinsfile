@@ -63,6 +63,5 @@ void auditTools() {
    sh '''
       git version
       docker version
-      pip list | grep mlrun
    '''
 }
