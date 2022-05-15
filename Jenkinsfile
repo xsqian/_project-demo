@@ -4,6 +4,11 @@ pipeline {
       RELEASE='20.04'
     }
    stages {
+      stage('Audit tools') {
+         steps{
+            auditTools()
+         }
+      }
       stage('Build') {
             environment {
                LOG_LEVEL='INFO'
@@ -25,8 +30,6 @@ pipeline {
                      ./build.sh
                   '''
                }
-               sh 'python --version' 
-               sh 'pip list | grep mlrun'
             }
         }
         stage('Test') {
@@ -54,4 +57,13 @@ pipeline {
                    message: "Release ${env.RELEASE}, FAILED: ${currentBuild.fullDisplayName}."
       }
    }
+}
+
+void auditTools() {
+   sh '''
+      git version
+      docker version
+      python --version
+      pip list | grep mlrun
+   '''
 }
