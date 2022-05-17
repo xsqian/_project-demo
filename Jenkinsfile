@@ -1,7 +1,7 @@
 pipeline {
    agent any
     environment {
-      RELEASE='20.04'
+      RELEASE='1.0.0'
     }
    stages {
       stage('Audit tools') {
@@ -11,7 +11,7 @@ pipeline {
       }
       stage('Build') {
             environment {
-               LOG_LEVEL='INFO'
+               PROJECT_NAME='project-demo'
                MLRUN_DBPATH='https://mlrun-api.default-tenant.app.aaa-spark-fs.iguazio-cd2.com'
                V3IO_ACCESS_KEY=credentials('V3IO_ACCESS_KEY')
                V3IO_USERNAME='xingsheng'
@@ -19,11 +19,11 @@ pipeline {
             }
             agent {
                 docker {
-                    image 'mlrun/mlrun:1.0.0' 
+                    image 'mlrun/mlrun'
                 }
             }
             steps {
-               echo "Building release ${RELEASE} with log level ${LOG_LEVEL}..."
+               echo "Building release ${RELEASE} for project ${PROJECT_NAME}..."
                sh 'chmod +x build.sh'
                withCredentials([string(credentialsId: 'an-api-key', variable: 'API_KEY')]) {
                   sh '''
@@ -34,27 +34,25 @@ pipeline {
         }
         stage('Test') {
             steps {
-               echo "Testing release ${RELEASE}"
+               echo "Testing release ${RELEASE}, this is a fake test to mimic failure"
                script {
                   if (Math.random() > 0.99) {
                      throw new Exception()
                   }
                }
-               writeFile file: 'test-results.txt', text: 'passed'               
             }
         }
    }
    post {
       success {
-         archiveArtifacts 'test-results.txt'
          slackSend channel: '#builds',
                    color: 'good',
-                   message: "Release ${env.RELEASE}, success: ${currentBuild.fullDisplayName}."
+                   message: "Project ${PROJECT_NAME}, success: ${currentBuild.fullDisplayName}."
       }
       failure {
          slackSend channel: '#builds',
                    color: 'danger',
-                   message: "Release ${env.RELEASE}, FAILED: ${currentBuild.fullDisplayName}."
+                   message: "Project ${PROJECT_NAME}, FAILED: ${currentBuild.fullDisplayName}."
       }
    }
 }
