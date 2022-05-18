@@ -2,6 +2,7 @@ pipeline {
    agent any
     environment {
       RELEASE='1.0.0'
+      PROJECT_NAME='project-demo'
     }
    stages {
       stage('Audit tools') {
@@ -11,7 +12,6 @@ pipeline {
       }
       stage('Build') {
             environment {
-               PROJECT_NAME='project-demo'
                MLRUN_DBPATH='https://mlrun-api.default-tenant.app.aaa-spark-fs.iguazio-cd2.com'
                V3IO_ACCESS_KEY=credentials('V3IO_ACCESS_KEY')
                V3IO_USERNAME='xingsheng'
@@ -47,12 +47,12 @@ pipeline {
       success {
          slackSend channel: '#builds',
                    color: 'good',
-                   message: "Project ${PROJECT_NAME}, success: ${currentBuild.fullDisplayName}."
+                   message: "Project ${env.PROJECT_NAME}, success: ${currentBuild.fullDisplayName}."
       }
       failure {
          slackSend channel: '#builds',
                    color: 'danger',
-                   message: "Project ${PROJECT_NAME}, FAILED: ${currentBuild.fullDisplayName}."
+                   message: "Project ${env.PROJECT_NAME}, FAILED: ${currentBuild.fullDisplayName}."
       }
    }
 }
